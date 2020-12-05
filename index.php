@@ -74,6 +74,8 @@ window.onload = function() {
 		} else {
 			echo 0;
 		}
+	} else {
+		echo 0;
 	}
 	?>;
 	
