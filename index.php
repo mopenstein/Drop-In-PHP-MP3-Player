@@ -3,8 +3,8 @@
 /*
 
 a:Jdawg Mcgee
-d:2020-12-03
-v:0.1
+d:2020-12-05
+v:0.1.1
 
 Simple drop in MP3 Player that remembers the last file and position.
 
@@ -50,7 +50,6 @@ function update(pos,file) {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
 		var response = this.responseText;
-		console.log(response);
 		
 		var res = response.split("|");
 		document.getElementById('lastPlayed').href = '?play=' + res[1] + '&at=' + res[0];
@@ -63,7 +62,6 @@ function update(pos,file) {
 }
 
 function changePos(obj, time) {
-	console.log(obj, time);
 	document.getElementById('daplayer').currentTime = document.getElementById('daplayer').currentTime + time;
 }
 
