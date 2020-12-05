@@ -34,13 +34,12 @@ if(isset($_GET["play"])) {
 	<meta charset="utf-8">
 	<meta name="description" content="">
 
-  <!-- Mobile viewport optimization h5bp.com/ad -->
+  
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width">
   <meta http-equiv="cleartype" content="on">
   
-  <!-- Home screen icon  Mathias Bynens mathiasbynens.be/notes/touch-icons -->
 	<link rel="icon" href="data:@file/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURfR6Kf+IO/7Gov/17+VwIv7UuP+cW+p2Kft2H/93H/+yf/7r4P7j0f////99Kf/QsoKdZQUAAADdSURBVHjanJPbEsMgCETBCwSj9f//tqLJJOmgnXafjJysDKtAuBQBvhZqxBpoyJ+ANM0ArSGlnCxA/0Ny0ZdSdgMQTDWXQwYg5MslC3C3eslzwO8uYZw4+OyIOYRQDWBzJYVTEwctMTPAFm0H1CLoeuKAcK5ngHwDzolvdeGgWdHCQZK3Jqm2HRAyRy0Uc416xDnwLA9g7PrLwdMdkHTEpE1CazA7DmAAcWsfPMKAew+C/SJl7ns88ng0ySG5lnPoewCt/nHtYdjy/F1wz3n1cGDE/PPTgwZ80VuAAQCUXSnv3GzD4gAAAABJRU5ErkJggg==" type="image/png" />
 	<link rel="apple-touch-icon-precomposed" href="data:@file/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURfR6Kf+IO/7Gov/17+VwIv7UuP+cW+p2Kft2H/93H/+yf/7r4P7j0f////99Kf/QsoKdZQUAAADdSURBVHjanJPbEsMgCETBCwSj9f//tqLJJOmgnXafjJysDKtAuBQBvhZqxBpoyJ+ANM0ArSGlnCxA/0Ny0ZdSdgMQTDWXQwYg5MslC3C3eslzwO8uYZw4+OyIOYRQDWBzJYVTEwctMTPAFm0H1CLoeuKAcK5ngHwDzolvdeGgWdHCQZK3Jqm2HRAyRy0Uc416xDnwLA9g7PrLwdMdkHTEpE1CazA7DmAAcWsfPMKAew+C/SJl7ns88ng0ySG5lnPoewCt/nHtYdjy/F1wz3n1cGDE/PPTgwZ80VuAAQCUXSnv3GzD4gAAAABJRU5ErkJggg==" type="image/png" />
 	<link rel="shortcut icon" href="data:@file/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURfR6Kf+IO/7Gov/17+VwIv7UuP+cW+p2Kft2H/93H/+yf/7r4P7j0f////99Kf/QsoKdZQUAAADdSURBVHjanJPbEsMgCETBCwSj9f//tqLJJOmgnXafjJysDKtAuBQBvhZqxBpoyJ+ANM0ArSGlnCxA/0Ny0ZdSdgMQTDWXQwYg5MslC3C3eslzwO8uYZw4+OyIOYRQDWBzJYVTEwctMTPAFm0H1CLoeuKAcK5ngHwDzolvdeGgWdHCQZK3Jqm2HRAyRy0Uc416xDnwLA9g7PrLwdMdkHTEpE1CazA7DmAAcWsfPMKAew+C/SJl7ns88ng0ySG5lnPoewCt/nHtYdjy/F1wz3n1cGDE/PPTgwZ80VuAAQCUXSnv3GzD4gAAAABJRU5ErkJggg==" type="image/png" />
