@@ -4,7 +4,7 @@
 
 a:Jdawg Mcgee
 d:2020-12-05
-v:0.1.1
+v:0.1.2
 
 Simple drop in MP3 Player that remembers the last file and position.
 
@@ -13,6 +13,17 @@ Just drop it into any folder with mp3s and head to the folder in your browser
 */
 
 $root = getcwd();
+
+$files_in_dir = glob("$root/*.mp3");
+
+//********** Sort files here
+
+//sort by file time
+//usort($files_in_dir, create_function('$a,$b', 'return filemtime($a) - filemtime($b);'));
+
+//sort by name
+sort($files_in_dir);
+
 
 if (isset($_GET['update'])) {
 	if(!is_numeric($_GET['update'])) die ('0|null');
@@ -30,123 +41,148 @@ if(isset($_GET["play"])) {
 ?>
 <html>
 <head>
-<title>Mp3 Player</title>
+	<title>Mp3 Player</title>
+	
 	<meta charset="utf-8">
 	<meta name="description" content="">
-
-  
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width">
-  <meta http-equiv="cleartype" content="on">
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width">
+	<meta http-equiv="cleartype" content="on">
   
 	<link rel="icon" href="data:@file/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURfR6Kf+IO/7Gov/17+VwIv7UuP+cW+p2Kft2H/93H/+yf/7r4P7j0f////99Kf/QsoKdZQUAAADdSURBVHjanJPbEsMgCETBCwSj9f//tqLJJOmgnXafjJysDKtAuBQBvhZqxBpoyJ+ANM0ArSGlnCxA/0Ny0ZdSdgMQTDWXQwYg5MslC3C3eslzwO8uYZw4+OyIOYRQDWBzJYVTEwctMTPAFm0H1CLoeuKAcK5ngHwDzolvdeGgWdHCQZK3Jqm2HRAyRy0Uc416xDnwLA9g7PrLwdMdkHTEpE1CazA7DmAAcWsfPMKAew+C/SJl7ns88ng0ySG5lnPoewCt/nHtYdjy/F1wz3n1cGDE/PPTgwZ80VuAAQCUXSnv3GzD4gAAAABJRU5ErkJggg==" type="image/png" />
 	<link rel="apple-touch-icon-precomposed" href="data:@file/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURfR6Kf+IO/7Gov/17+VwIv7UuP+cW+p2Kft2H/93H/+yf/7r4P7j0f////99Kf/QsoKdZQUAAADdSURBVHjanJPbEsMgCETBCwSj9f//tqLJJOmgnXafjJysDKtAuBQBvhZqxBpoyJ+ANM0ArSGlnCxA/0Ny0ZdSdgMQTDWXQwYg5MslC3C3eslzwO8uYZw4+OyIOYRQDWBzJYVTEwctMTPAFm0H1CLoeuKAcK5ngHwDzolvdeGgWdHCQZK3Jqm2HRAyRy0Uc416xDnwLA9g7PrLwdMdkHTEpE1CazA7DmAAcWsfPMKAew+C/SJl7ns88ng0ySG5lnPoewCt/nHtYdjy/F1wz3n1cGDE/PPTgwZ80VuAAQCUXSnv3GzD4gAAAABJRU5ErkJggg==" type="image/png" />
 	<link rel="shortcut icon" href="data:@file/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURfR6Kf+IO/7Gov/17+VwIv7UuP+cW+p2Kft2H/93H/+yf/7r4P7j0f////99Kf/QsoKdZQUAAADdSURBVHjanJPbEsMgCETBCwSj9f//tqLJJOmgnXafjJysDKtAuBQBvhZqxBpoyJ+ANM0ArSGlnCxA/0Ny0ZdSdgMQTDWXQwYg5MslC3C3eslzwO8uYZw4+OyIOYRQDWBzJYVTEwctMTPAFm0H1CLoeuKAcK5ngHwDzolvdeGgWdHCQZK3Jqm2HRAyRy0Uc416xDnwLA9g7PrLwdMdkHTEpE1CazA7DmAAcWsfPMKAew+C/SJl7ns88ng0ySG5lnPoewCt/nHtYdjy/F1wz3n1cGDE/PPTgwZ80VuAAQCUXSnv3GzD4gAAAABJRU5ErkJggg==" type="image/png" />
-  
-<script type="text/javascript">
-function update(pos,file) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-		var response = this.responseText;
-		
-		var res = response.split("|");
-		document.getElementById('lastPlayed').href = '?play=' + res[1] + '&at=' + res[0];
-		document.getElementById('lastPlayed').innerHTML = res[1] + ' at ' + new Date(res[0] * 1000).toISOString().substr(11, 8);
-		
-    }
-  };
-  xhttp.open("GET", "?update=" + pos + "&file=" + file, true);
-  xhttp.send();
-}
 
-function changePos(obj, time) {
-	document.getElementById('daplayer').currentTime = document.getElementById('daplayer').currentTime + time;
-}
+	<script type="text/javascript">
+<?
 
-positionTime = Date.now()/1000;
-function timeUpdate(event) {
-	if((Date.now()/1000) - positionTime>5) {
-		update(event.currentTime, '<? echo $sfile; ?>');
-		positionTime = Date.now()/1000;
+for($i=0;$i<count($files_in_dir);$i++) {
+    $file = realpath($files_in_dir[$i]);
+    $link = substr($file, strlen($root) + 1);
+	if($link==$sfile) { //is it the current file?
+		//store the previous file in a javscript var
+			echo '
+		var prev_file = "' . ($i>0 ? substr($files_in_dir[$i-1], strlen($root) + 1) : "") . '";';
+		//store the next file in a javscript var
+		echo '
+		var next_file = "' . substr($files_in_dir[$i+1], strlen($root) + 1) . '";
+';
+		break;
 	}
+
 }
 
-window.onload = function() {
-	document.getElementById('daplayer').currentTime = <?
-	if(isset($_GET["at"])) {
-		if(is_numeric(substr($_GET["at"],0,256))) {
-			echo $_GET["at"]*1;
-		} else {
-			echo 0;
+?>
+
+		function update(pos,file) {
+		  var xhttp = new XMLHttpRequest();
+		  xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var response = this.responseText;
+				
+				var res = response.split("|");
+				document.getElementById('lastPlayed').href = '?play=' + res[1] + '&at=' + res[0];
+				document.getElementById('lastPlayed').innerHTML = res[1] + ' at ' + new Date(res[0] * 1000).toISOString().substr(11, 8);
+				document.title = 'Mp3 Player :: ' + res[1] + ' :: ' + new Date(res[0] * 1000).toISOString().substr(11, 8);
+				
+			}
+		  };
+		  xhttp.open("GET", "?update=" + pos + "&file=" + file, true);
+		  xhttp.send();
 		}
-	} else {
-		echo 0;
-	}
-	?>;
-	
-	document.getElementById('daplayer').play();
-}
-</script>
+
+		function changePos(obj, time) {
+			document.getElementById('daplayer').currentTime = document.getElementById('daplayer').currentTime + time;
+		}
+
+		positionTime = Date.now()/1000;
+		
+		function timeUpdate(event) {
+			if((Date.now()/1000) - positionTime>5) {
+				update(event.currentTime, '<? echo $sfile; ?>');
+				positionTime = Date.now()/1000;
+			}
+		}
+
+		function skipFile(file) {
+			if(file!="") window.location.assign("?play="+encodeURI(file));
+		}
+
+		function fileEnded(obj) {
+			window.location.assign("?play="+encodeURI(next_file));
+		}
+
+		window.onload = function() {
+			document.getElementById('daplayer').currentTime = <?
+			if(isset($_GET["at"])) {
+				if(is_numeric(substr($_GET["at"],0,256))) {
+					echo $_GET["at"]*1;
+				} else {
+					echo 0;
+				}
+			} else {
+				echo 0;
+			}
+			?>;
+			
+			document.getElementById('daplayer').play();
+		}
+
+	</script>
 </head>
 <body>
-<div style="background:lightgray;padding:10px;">
+	<div style="background:lightgray;padding:10px;">
 
 <?
 
 if(file_exists("last.played")) {
 	$splits = explode("\n", file_get_contents("last.played"));
-	echo '<div stlye="font-size:20px;">Last played: <a id="lastPlayed" href="?play='.urlencode($splits[1]) . '&at=' . urlencode($splits[0]) . '">' . $splits[1] . " at " . gmdate("H:i:s", $splits[0]) . '</a></div><br />';
+	echo '		<div stlye="font-size:20px;">Last played: <a id="lastPlayed" href="?play='.urlencode($splits[1]) . '&at=' . urlencode($splits[0]) . '">' . $splits[1] . " at " . gmdate("H:i:s", $splits[0]) . '</a></div><br />';
 }
 
 if(isset($_GET["play"])) {
 
 echo '
-<h3>'.$sfile.'</h3>
-<audio id="daplayer" controls autoplay preload="metadata" style=" width:100%;" ontimeupdate="timeUpdate(this)">
-	<source src="'.$sfile.'" type="audio/mpeg">
-	Your browser does not support the audio element.
-</audio>
-<div style="width:90%; margin-left:5%;">
-	<img onclick="changePos(this,-60)" style="float:left;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAYAAABVy1Q8AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAUnSURBVHja3FpNbFVFFL63Vao0SlOwSm2TQkJAoEZj/ElkUX4KxgQXbvskELsiwQXBDSRtCeqOhWmqxp+KsjAujFjTuCx0UYFEmhhIqCVQjfxILa+QVKVp3/Uce24zHefMzP2b19uTfL2v982bmW/OmTk/9/pBEHhLShwReg5Q64SLA0K7AGOA+qVAaCtgClAErMo7ISTzJ44DuJ13QtsFMojxPBNqJRPDjkt5J7QNMCmQKeXZ5LYJZiaSySWhHYAJycyCvBJqlcwsyDOh7cyekZGLQ0E2M44M4hbgEReEHoj5252ArwE1NGHf0H45oI00dQdwgxbjDi1EWYNT3DN3DXtGhKrN34BRwA+ATsAWQFU5TG6H5DRtCZnazgIuAA4BnnRF6JmImgliag/32zHAE1kTwk3da5hMmgSv0r7zszS5SsBHEUmVYtwXv+u1PfLjHttI6tOI+2ga8CPgPK38PwYS8j3cX09l6YcqAB9H0BRGCo8BHgLUATYBCoDPAb9pNCeSugZ4NkvHiqQ+sCSFhFYy/aA57QP8xBARP2Mq35xl6FMh7KlSwlgO/dABTZAb/n8J0JhlcFopmF8phWgbzXHQcFiconEzSx/waP1QY35Ro+2HAScMpN7OOsFD8+thSMVJH1ADn2k0j3HgxqxTcG5PxU0fHgT0M6cfXr90USSpkJxv0nxoDfkulSmjP3vZRRnLl8wvacb6uibS+MJVoRE11Z1ixvodoyU85te6KgUjqU8A9ylSSFpV4hz3/iwIYfbaQpAd5jtJ8hxhcQYlLYXX79MmhGSGhRVTTaYihXEOMhrCOG91WoRaJDKB5aHhR8l1SJoVkXqIl5ISQiIDTOc6wacSTQpTrbEY81HAz8yYe5IS6tRs0pCweK9T0uReSuvDGkWR/jdp9lvm+O5IQ0NdjJZUhIqKdrKpDliM28MQ6k5Sl0M5AzhNplK0aD8mFFvEe02CubVY9DOp0BpKNf4JCWHk+irVyzyhQa/oieXglhmAk1MKQu8Le8hWZjXH+jyhDUynwxpC5ZLlioX1qW4x7xvGpVUPpdZbfFLH3C+KhG4xjRqpsMGdOK4Fo44G5rubIqFRZpJoiisWkXZqFOUsX+QQErrCbG4sx75o8PYu5QWmRDxJHOYJjYU3hH0UXndrTjnXLwq9xszxSugWQkIY3g8xqnyFsdvAsYYaaC6qrTFEHBZEwH2KxgF1VDD4IhfSRnMJFIvet8AZkWDt+Rwz0bekgNK1NNEcVIuJcz6rIvQX4KTE3KcfrqbgslyCY9dLZh5ecc5TKkIoXwFGGC1hdNxeBjLtNLZKOyM0Z6mWtVDe1FRY7nlzz1hdSSuNyT0MaLepy/mG4t5ExGAySXoyoZlHv3za6fKhZkVnYiX0Lp06WUnBW/g8t6RY1P89VjEleAWPfwiF1xkK/9MMYGupzxnNuIg3lD7EImPtMpAKKIbaFyZYMaWa+hi1GK+L68Q2BT/umR8Xhg+iOgBPe3YvUVRR2w76Ldev+Pm4rkPk4v/3xzdGMO8CDktHps+EQdNUmbkI+AVwnXxcmJyhP1kP2EyEljGhlDzOe4AjJkJRiiTtnv4tkiTvLeiegBdt/V+cqs/zFAgGjjBEY3pZEfIog8Wiyo0MNYR9H/IivtCUtC6HxfejlIeY3gax/X6M+oxV2E+rtr2S/MI33txLFKWImvmVflvw+HcZrAnZnnK28jjl/Fh7W0f5yyqh9ISnHb45/Dv5HCyTXQb8kcbg84SWkvwrwAAD/T/IhhqabAAAAABJRU5ErkJggg==" />
-	<img onclick="changePos(this,-300)" style="margin-left:20px;float:left;" src="data:image/png;base64,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" />
-	<img onclick="changePos(this,60)" style="margin-left:20px;float:right;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAYAAABVy1Q8AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAUZSURBVHja3JpJaBRBFIZ7YtwSXEhiXKKgguIWUcQFFInGYC4KevGQuHsS9CB6UXAUl4t4kBAV9+XgQUSNqOBF8RAXcEEUkQSNIu5xouCKTvtKX+uzrFddPV3dY+bB74yT6ar6+r2qevV6Eq7rOjllMQEVgcbFwhITUD9QC2hmrgCVgFKgD6BpuQL0SvQJehMVVNxArxHIg6rMFaA0vooQrMqFkEsTqDbQ9PYOJEO9sQWVTSBXCr9W0IxcAHKl8Ktqj4uCCohCVbYHoG6gFwyQDJVx+AmW/AgGn4e5WzGmPOJ9L1CB5pqENyb8/nHQPNCFbCWnnUFTQEnQeVAT6JNmvrg+3hKv74LOKRshVwZaDboJ+m4QUqZAdPOdEQdQH9AmZl6YDNoN6KkxUQGJWK8BPYwAgLspB3BRsQ5Ugo2rQsPUS+mAMLtBHaIIueE4TzgQ1Wef0ZPXQVdAXwPOn31BYIIAjQU9YgYuQzwBHQTVgkaCSkFdcNl+FcAze3D5t76xluPRWYaRwW6AFmNYqqzYB4i2tTMTGBOgAaB7jCforr4C96EwuVyazJm8TPcQHZCI3VM+k/8yhlXYbDtNwqxDmE1RB7TGB+YQqGvIbJu2u4ukP9aBRoDeau7k/gzupOqA572vDxNmJkBHFJ1678+COlqoKViZMyZAk3H/UIWG2FMGWTwPWYXhgA5rdvS5Fk+s9TbmjB/QYFyGVd45bfHEWmfbMxzQcs3GF7YqIzKFL6C9UcGogM5IXkmT/cZkED1BFSjVuWmzwQZsDagvyddkrTKEuUWuUR3L85yIjQJNYmA+Yz6nswoJxsUJn3BiNgq0gAG6A+quAbnIXCcXP+TrBipCtadNoPXMcn1Sc6eTmkXEGzj9LCl5chEerVOkfjAmjGcpUB0DVO8TaknGSyqglOJ7cqheDAvkTdRCJkTaNNdfAm0EzTHsT5yrbis+a5NukhsGKp+sQir7btBGm2Ffp/CVVnB2kDn0183WtLMQtMT59XjTM5H5nwNt84C+kobo3Slw/j8TJYGpis8fUs+kmItL/0OgIsabrynQc+bi/lHv7j61btm6YGlAZS8oUBPT0HAb+4NF6wEaxsA3UaBmZnKLku+ELHiH89BEHJNqYWqmQC3eByQmvdfZcWcwmlVuFjPGZmT4DSRS+0bGldU4l+L0kMvM52pmajQiw1/7T4Piyy42VBOzh1RWi2NR5YoNjmJDvQq6xjS6Ukoo47aBOAYVuBjzFRWQ2HmPSuSe+/th3pYtS+KZzZXG5uCYPzpMynMM9IDxksiOl2UBZhn2rfLOAxyzlHL/2wBXTH/vWP59jo9VYZ9cJWqpSaExgQVFrtjYytQNbFsFqUJxRc+ECZCDx+5WRdGEPvesjRCmBvtQPcbxbmq5SaGR2nxHXYv23n/D9L/IcuK5A9vm+nW5m2nywGuDD5SLOdRickjMxAqxjSaD/jaY1uU4267phP7/HtYmRhtm6J3xu+udPw/W/B57bvc7gid+/pPwPfFuAa2Vlkw5o0iQw6KoFt3FZfUZ2ScKsOg4FDQKgToxh0u5n62gdUEqpyb7QcrRPwm38bsE1a9JjPa/TH54MR4TQTcmNWKfTlRAXuyvxlCKykOi7TV4QnWiBvKsDMtYLY7+YbAb4O8t2GZZ2EJjGCvGfeEE6HFAT4nvPsFr52NboUrBpqucqfXGM78oNQ3B80sJKYeJ1U78Cvgp7jmi8Hgf9NLKQcoDyiX7IcAAOz478S1wV/8AAAAASUVORK5CYII=" />
-	<img onclick="changePos(this,300)" style="float:right;" src="data:image/png;base64,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" />
-</div>
-<br />
-<br />
-<br />
-<br />
-<br />
+		<h3>'.$sfile.'</h3>
+		<audio id="daplayer" controls autoplay preload="metadata" style=" width:100%;" ontimeupdate="timeUpdate(this)" onended="fileEnded(this)">
+			<source src="'.$sfile.'" type="audio/mpeg">
+			Your browser does not support the audio element.
+		</audio>
+		<div style="width:100%;">
+			<img id="rwd30sc" onclick="changePos(this,-30)" style="float:left;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAMAAABiFaQOAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURTAwMAAAANHR0enp6RYWFj8/P2BgYK+vr7+/v5+fn3BwcICAgE1NTY2Njff39////6qgJZAAAAAQdFJOU////////////////////wDgI10ZAAACjUlEQVR42uyWa6+kIAyGC+V+8///29MCCjo4Hjf7ZZMlM8boPNO+bWmB7Q8W/If+bSgLfA1l8R4i5jUUiRHlHcR2hPDWSSy/hRpTF6Toyi8gjOK8IOMjJEFcl4r45B5+UkL5J00rShh8iF6jNKiTNPmQJ9Sc3ILSmwEq+VARbKv5gx4+qLvaI2oXUfJuDfDF1pC6U6ncR8/HaNtdjp7/vZhO5ds8VW9gw82rXclONVlwU+JUr9hooaqt1NN1A5EASxFL6Dju9LXDvhDuFnL01bVyN/rG+tgOU1+g7Qxt6VC1DnkhX8IVcl3rDcS/1niFSstW+gIpe4X6jqZgLiEXxELTJpt/cgVRPSBTH1CBLuomenEF9fjFd1CoUHgHxZ5e2LJOKempcVBt2sAVa+cyOkOm2xyBEP3JXLCTewyFUb3DVNulVvUSmF9UTS1lem6+ctqEU3vtJZE36NV7+ODrXm1XVxG3g91dS5Dcbw8PoF999dIfG9buZQ57nrsougFBvyOnSRHfawGmRb1JgsJ5CrN/pDNoImgfUICj5g/4mpHuXahV7k6NhnPZnjAkHZdhwmlsuQp1/5opVqgJMjG6VgvcbPldN0Te1TLKU6NxVldBTmtSFiMbM9UNMxyCabT4qqmp6Zoia6om/dSZYSocRe5SxCqRah8DENLwk+zU+ONe5emgfPWzXbmKTFUJtjNpass9wTwl0XEi5+vmnFenYQOnyqYsLM4pGPa3/jxqjnMA+Mu5oYypFq9DLYzhGuXBFRnH1A6f43M+c4CJ3lqfzTzn42pQeyW+rPkkAaspuVjTgeDSlsdIvprJ5cuJBeMCux6NPvse+nTiVPL4m/MeuhySBtApZId/64j9I8AAw+KFwPQaa4sAAAAASUVORK5CYII=" />
+			<img id="rwd1min" onclick="changePos(this,-60)" style="margin-left:10px; float:left;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAMAAABiFaQOAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURQAAAEVFRTAwMBkZGdLS0oKCgr29venp6WVlZfn5+QEBAXd3d6Ojo5WVlQ8PD////w2IqD4AAAAQdFJOU////////////////////wDgI10ZAAACjElEQVR42pyX22LsIAhF8Yoadf7/bw+iScyFmXp8SNPGJYgbpPD5jwHiF4vrkDfrkK91GfIVli0RswwRk1ahxqxCnVmD2DdYg3ZmBRq+LUEnAyb+ETp8o1FL9hbjT2hm+KUa5Xz8Ck2+EcSv9EjaoQzZyQ5cDJoNJSgGeKE6aLLk3oVK85N+BBQCQdS0Ka1NHUR7aCuEfLZlMKLNwXR7FBdjhcOdqKEIzLoHkXRvBRmdHh4yiqWHlTxEQbAHNWnPqhEOFaV8Gh7Ogm1e876cBI19XVS+269WSvc+45oaUXEMIYiFhb255ROafmBernvhmYS5KyTIUAzpkbnq2JVUlom6Q76rq7xC6JvfcbtDHAs6qzcISTY855GxhS2R288SRozgs+1S8Y9qxILZ/+ixOYuzD2Qq3yHXFc6bdjQnUw2o9oxfC7p7WHLqgFoGQltcTadHWgnPPeEBaQbqtMWN99Qgp9o4C8fpnmuqURPUnW8Qqx62dwgu0DaEBPSWGP8DxHui9YGOrEEq/oaiYqh8YEjqlKcMoYH9cG0dr7zYN6gvT8cGn6hZh+G3pcATdWznFNKljogQmj0LYVht6vgBORh6bVDUrYAepiSIDA3vWEblzP4vUOiGyqgR2EPBv4tQgW4I98IyCk31cjO5X8flrHujEspUZ9LIEjivWwpHze9M5is87fkIRyXklVJ46VMwpP4V8vWqccd9l29VKGYzVjyPcsqVToF29uCipUrBLUWacu5M922/k9sdHVym4YLu0/nL9nZRl3pQex+wdwUtRuW9JbAapJGmhuDeRzgDj66FU8DFL/0eMna6xr6Ze0f1rHtZmclWMirjX1ps9CUorbVSoXhc+q/my/gnwADGS4ZXnZQ3BAAAAABJRU5ErkJggg==" />
+			<img id="rwd5min" onclick="changePos(this,-300)" style="margin-left:10px; float:left;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAMAAABiFaQOAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURQAAACwsLBQUFNHR0UBAQISEhGZmZr29vejo6Pr6+lNTUwEBAXh4eKamppubm////wkrDiIAAAAQdFJOU////////////////////wDgI10ZAAACr0lEQVR42pyXjbasKgiAFf9Qq3n/t70I6LRLp8517dVijC8QAd3m8z+GWb5x2IX3UALswmsoVYVIeAslMAI14SVEqgKx8A4i1cqQCK+gpsqQCm8gUSWoCy8gdokG7F14hjpjYAiPkLpEo3bhEfoyZghP0PDtPB6gKVPNT+js23kEXENuZodtwYYrKEczp2jS7iv3flEm4iIQRNWFh9VYtwj5H1v1bOkPdYnnjBKkpbtbpNHwsH7T6JCwki1cJOygYAgf5/UzJa/qST0E7IJ43agaVpCuC7ALJ/uyrFm5iwaVuwo8VzggJi4bC3vTGosIPIfApmpa972oLYwFmdol/HEN5agdtgk6VzQ+67ZMytiFXjmy18cNwpRKokFB2K5VlH3rG6bcoKAZRMvN+WpdXlJarKHJiSUZkiaQDTSwe4vt0X23/MF9AvmvTcpUcIcZiVo46OEK0bRHNtQgaEtojzB2j1IkXiEvWpRiDSoNaJpqfWP3GhS8L94fA+JRGErt52cGRZUGRCsxdglVhjZpNl9IHjOI12S25h5H3+c/C5tC2Y/oSUoBPkMIpm+uA90y9tp7v4T0846gbPn8is9riqxoc9unWOvw7xdEtatVaNSqNpqoEEygYDRfG6R1wqYCzUeYbi4Cq7UwtzQ6vtWvAar7HYpi6NAegRwK+c3NFI7PDTr4vJeE54RVU5C04lfXJTWkWa6dENL6yiga5dSW+bhtzXSfMzsf4eOwMaMT8pdqxDuCscpbTZtRhEEpY49LF8qH7e/C9VDb+pFHncUNLrtgZZb+tvvxueltiPMrhp1GiFbU+c02O6gP6JREVx/KwDG/EjhvlsO71YUqBzC3+weXQMg/7nvI2LiCiLtwvVHdjhrcC9TzZars+OaKjSnE4q31JYaE//RfzY/xnwADAO53fHkIrtfzAAAAAElFTkSuQmCC" />
+	
+			<img id="fwd30sc" onclick="changePos(this,30)" style="margin-left:10px; float:right;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAMAAABiFaQOAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURUVFRQAAANHR0ejo6BERETMzM2BgYK+vr7+/v5+fn3BwcICAgI2Njff39yEhIf///4Jl6WIAAAAQdFJOU////////////////////wDgI10ZAAACf0lEQVR42uyW6Y7cIAyADeYyJsn7v23NTWaSzHTbP5WKdqMI5gu+bTh+sOA/9I9DqNJPoFvqEbqj7qFNIMXfQxvq4ClD13e9Q1tg2NVY6QsIk1XnxfgBQjbqdVn9DNGu3hl8FA+d+o5ZIH1SZrf2lpmQnqLtjjRueMsMaDKWsEfEDdMh7LKZtI0wumMatEFjQH+fGqkxrlyDxOybq5nuTK7NiTHdbpTfzI1zm4OgqsM96CqtDF5BoVm6HYp+XuwCZT8b3l9B7aJ+JlCQf1uuPK6SCroOari5QfAINdOFNdrF1fERgtUKwxSATxDubxmaf238E9Rst3ojRPVBp1pA7JRO4gEz9QTx2XbVevwBigWKvwdV1/IfQrLhY44I/xpGBHmlAS3iVcvIzlvAVk3c0Mkdp6tqavhC0flAvgYtitaAOPSShGkmRsvvLJ4/y0AlV+szFCR0sInrBdJmTYwsgW1PKlLS+GT7vBZos6tS8mKV/E6EFo3yOyjrqnFdjx3oNml5K3pGEEIiUtzEkP8sAbV8qXaGke01zG12Wd3JkA45DAGX2hEK1OSrV2UNQSDHHKrLcx3NOjUz5MiGWfWKVsFDUSgAiGbM+TJXxHBTIJjCFi92bZpOnHUqV9JSsmAJHCPi7soVotYx6Tfa5Z0UzPxwK8swKCpy1meOIle0tL4xsNTyXpcNHRhy4q/PIwTq53ptNdS7U7yo9xj7KZ2bGo82SNvLXDHbN7+2zzh7M+vBbZpnK47vjZrXnu4SeU/s1ubNVyMBGfWwDF0PH9reM6e55TSxbOnmstm+rwYq5ItJZ3+dqd5GNyQ4cTsQfjMkYkgRrLUAMQX8WyP2LwEGACbmhfqzTo61AAAAAElFTkSuQmCC" />
+			<img id="fwd1min" onclick="changePos(this,60)" style="margin-left:10px; float:right;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAMAAABiFaQOAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURQAAAEVFRTAwMBkZGdLS0oKCgr29venp6WVlZfn5+QEBAaOjo3d3d5WVlQ8PD////yWhsNkAAAAQdFJOU////////////////////wDgI10ZAAACi0lEQVR42pyWiZLDIAiG8b6iff+3XQWPpJFkp85Op5v0A0R+BD4/LGDfOP0LpOwPUCn2B0/AUY8QRz1CkaGeIYZ6Do+hniHYR/gGbal3aEPxUCBoR22h4LRNuUBfN+oOBWuEjPRjhvqGnJFxhLWgL+oKuUNdXMDJl2agpOIGICs+bCHnMZDlKjLMCdKSEPpQUs491S8XZkEa6xOtK5+0C/1w734WpFXLVsNkcueK2DADchJ91CTlcCujb6ZDQfQUCP1d5RumQ6af5Pk9Qi02Rk+6xLtNFCFs/HTIA+ZNhLvcdwxClnKg3F1PWwYhT5lLdxF6tu/pgo7EXbl7PwhlOsRvTbvIMQ0SrRROWXDWkkwCfwH0k8+TkYApDeHhqrEk7VEKtjLweqkldCQp31bgf8OAa8G6DWQw4T13hpLysfXDVJ+pprboO0Tl0E+kdqIJYQuTy+AVauuYeZiQRKBstjggs57M8GqsETc5G49oy4zwlqcrBBfoQPu+QgdC/j+Qx3o7KpQpe+EdCgKh/KH3cNIFD/XasRXS5VqvO4jCIPP12OqD1oji2hTvyeMPZWhV7rGpzPhYqHcaj9Kw1BLNG0T11vZRHwSJghquOAiHEYwOe0SG4fcJoiJA3cHoyXHokIEykCM3+l5mx4y5bCFHabVlQd2Sp4gZLYsg3Z616zjtmVQAk9X12NOZgCxF7zazi4/0FtL1UjNExajSVxcKSXWL6yhPWiEKpNGTC9pImijiSXNLyse4o+uf9CbVZbzs13CMF52uOHKZFMCcDgZT8n740BK4FaXmxpxg1H3IQQmY8DBQOaMuodEgYtzLvOeSUCdfUYnk/jOOOpu9kFIK4fOmkz+Now/rT4ABAF6ehhKswwzcAAAAAElFTkSuQmCC" />
+			<img id="fwd5min" onclick="changePos(this,300)" style="float:right;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAMAAABiFaQOAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURQAAACwsLBQUFNHR0UBAQISEhGZmZr29vejo6Pr6+lNTUwEBAXh4eKamppubm////wkrDiIAAAAQdFJOU////////////////////wDgI10ZAAACs0lEQVR42pyWWQKjIAxA2Qmg9v63HbJRp0DrDB8Wax4kIQvm9R/DTP94+QX/D5DLAunkEdSyQC0/hwxvATp5BrEw6OQZ1EgYdPIQImHQyUP1SBh08hAyqNipk/wUQuExyY+hZoxOJmoHfaW20G1M1AyZ9pP6hCDOzKTh3xAcs3K6l99ApzUL5YgxCZYQpJvPJqYs1fN2g+DffzFvSJh2X369zxvyGJ537AujEFhSrTvp0jASXSfdBlSq2BO8RHkXdTtGoCgMfnfqYp1s8sm725pOzAC3tGdAyZADahnp3kXBrXUTKLMPrB9RjqKgkzWU2L/nSI0kdW9lj0BicR35xMuD2+xD0MWHqLHfRBTajkGoYiiYwMvnXHMfgGlS9g0ALB1ilAMb25bypdV4jhb/CX1tamRSs6CQjX1IxgHpuah7kRwuvutQGDPTg9f5vqiFT4hPSU6kdghoI4TwLCw+4gzhOPg1sFSvIghVCgozdt9DNCpBGV9fb+gKoYYQh3o3CNPQLqHE+dOh424TSdFjCVG8Heg9yr9wO8odVAJBqF4mIxz8hsDJwRtOW42BI4SwhU4yqXvWvIqlgE2/bUpU5GzBKE9kFOv3DepXGMOrdyhzqYrqH4TcAuJ4Qzs6VLBQNt4KuxMWvMXh0mWE8w5rBMc5WSUOaucMSSW5pLAAu4LePcq56zVBF9V6Dniqe9e9sfaMX+Rddu+NpCxXrpb7ayEzWrKMNhrqM+5cMydV29F4pdWchldqCWYEUuOvWk+1qUWhjL0+qlC5rH6Ln+3z4C+IRT+44qM12iCPuVEf0tspvlI8+4jJSj9td+Z+JbicUuxdeQjjrvXlwwezHcHvrjklujbdWSgFYvlyoYLo7pc9VtdF+HHfg7O6217N1RN+X0cx+mKqwdpQU8zw6Ir9YPwRYAC5yHxhsOwjcwAAAABJRU5ErkJggg==" />
+			<br />
+			<img id="prev" onclick="skipFile(prev_file)" style="clear:both; float:left;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAMAAADypuvZAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURbq6ugAAAPz8/Ozs7FBQUBcXFzg4ONjY2GRkZMPDw1paWkZGRgEBAZWVlQ4ODv///xKzLLsAAAAQdFJOU////////////////////wDgI10ZAAABrklEQVR42nyWV4KFIAxFE1CxoG//ux0saMrN+HnCkZhIoV/wpFJyBClyMlGJYCTlZdtKBCly1mMqESSc2zIzm5kEpGCekXkoESRYg/lgIylIKLeV2UgaUpCbkTQkkFtlI1lIoKyVa1WShYRyq1pykHwrnnCXACQwD6tvApB8K1QcQrKt6NE7DqGQ+ueqOISvdH5uZROHUEi9FV+4xSF8pfa5Xyu+OIRdelshonzMAIr1pFtxP3XdAeS+cm0r7nm23UMhtXmqTZ03WtnBTyo0+DTm3cPr6dI+ujQYQiGl1gxXJAil1Oow2gH7DqCQfqm9dqxmwHR21kJZ8pTIJXNM5KGQTo2ezUY2dwFQ/BHpsdRr6wyg+mGfDOWIOmQPzXq6q8EqDqGSXDVOCUC9R6TWGrnkrj0CQbUbJd2aezdCUEn3+u0jHglAvS2n6+fhqg4AD40kW/NKDlpJlOuTLHTn09MafT4Z6KW0zKOTNERn7vOj6jNXQngluBpqrwQCRveIA90jjv+ku8j2xvLBQGoDeCoRDC5UbcA2lAiG971Ee45gLOWcIkjhdbQ9EfwTYADxyVlJ1ToYAwAAAABJRU5ErkJggg==" />
+			<img id="next" onclick="skipFile(next_file)" style="float:right;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAMAAADypuvZAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURbq6ugAAAPz8/Ozs7FBQUBcXFzg4ONjY2GRkZMPDw1paWkZGRgEBAZWVlQ4ODv///xKzLLsAAAAQdFJOU////////////////////wDgI10ZAAABlElEQVR42nyWSwKDIAwFSWzrD/D+t62CbYFM6nJk8JGIEo7jmOZZj/FCeF/huh/CZAYgbKR539dpvIGwlV55MwMQdk8SWdYhDMJWeog8x2kRDpLkpV84wlES2bowCK3Uh0FoJYltGISjFKPEtsgIrRS7MAhNvDLg1xqEsCZpp0XoSN/WICSpjqitQehI3zAIfelszTktQpZKuUprEDrSpzUB4f2sz37qRpTWLBlgterOLQWStlzPLW0Aa0JPOluT9mxhScjSFSZuYQd4PeuWzHWFeSwJ4Dr/k+SZZoSedEU5G6MIHam0ZQkpAZzUK4TEq5UvC1d1qldjhPDKFupX2ocnlVdm3QCq4rt3b4SgS4wWslRGXjEmgqq8NeReLkJ/E9YpEeKH5W6FqgNZKv1R9aCVynLL9lQPgiQ1RvcD6CF8lpv2ORD+Gl2JEEK8thUM4U+4rGqkHhrp91lrpAEOUjxLZI4EBg5SpnNE/neO2KGsCLuzkdiyIuziPeyUCNvzXoLbCBtJp8neR9hKFF3VdY63AAMAteBZIvIjGYgAAAAASUVORK5CYII=" />
+		</div>
+		<br /><br />
+		<br /><br />
+		<br /><br />
 ';
 
 }
 
 
-$files_in_dir = glob("$root/*.*");
-
-//********** Sort files here
-
-//sort by file time
-//usort($files_in_dir, create_function('$a,$b', 'return filemtime($a) - filemtime($b);'));
-
-//sort by name
-sort($files_in_dir);
-
 foreach ($files_in_dir as $file) {
     $file = realpath($file);
     $link = substr($file, strlen($root) + 1);
 	if(strpos(strtolower($file), ".mp3")==true) {
-		echo '<div style="vertical-align:middle; margin-top:8px; border:1px solid #aaa; padding:4px; background-color:'. ($link==$sfile ? 'lightgreen;' : 'none;'). '"><a href="?play='.urlencode($link).'" style="position:relative;top:-5px;font-size:20px;text-decoration:none;">'.basename($file).'</a></div>';
+		echo '		<div style="vertical-align:middle; margin-top:8px; border:1px solid #aaa; padding:4px; background-color:'. ($link==$sfile ? 'lightgreen;' : 'none;'). '"><a href="?play='.urlencode($link).'" style="position:relative;top:-5px;font-size:20px;text-decoration:none;">'.basename($file).'</a></div>';
 	}
 }
 
+
 ?>
 
-<br />
-<div style="vertical-align:middle;"><a href=".." style="font-size:20px;">Up</a></div>
-<br />
-</div>
+		<br />
+		<div style="vertical-align:middle;"><a href=".." style="font-size:20px;">Up</a></div>
+		<br />
+	</div>
 </body>
 </html>
