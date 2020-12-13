@@ -3,8 +3,8 @@
 /*
 
 a:Jdawg Mcgee
-d:2020-12-05
-v:0.1.2
+d:2020-12-13
+v:0.1.3
 
 Simple drop in MP3 Player that remembers the last file and position.
 
@@ -27,7 +27,7 @@ sort($files_in_dir);
 
 if (isset($_GET['update'])) {
 	if(!is_numeric($_GET['update'])) die ('0|null');
-	if(!file_exists($_GET['file'])) die ('0|null');
+	if(!file_exists(basename($_GET['file'], ".mp3") . ".mp3")) die ('0|null');
 	
 	file_put_contents("last.played", $_GET['update'] . "\n" . $_GET['file']);
     die($_GET['update'] . "|" . $_GET['file']);
@@ -35,7 +35,7 @@ if (isset($_GET['update'])) {
 
 if(isset($_GET["play"])) {
 	$sfile = substr($_GET["play"],0,256);
-	if(!file_exists($sfile)) $sfile="";
+	if(!file_exists(basename($sfile, ".mp3") . ".mp3")) $sfile="";
 }
 
 ?>
@@ -141,7 +141,7 @@ if(file_exists("last.played")) {
 	echo '		<div stlye="font-size:20px;">Last played: <a id="lastPlayed" href="?play='.urlencode($splits[1]) . '&at=' . urlencode($splits[0]) . '">' . $splits[1] . " at " . gmdate("H:i:s", $splits[0]) . '</a></div><br />';
 }
 
-if(isset($_GET["play"])) {
+if(isset($_GET["play"]) && $sfile != "") {
 
 echo '
 		<h3>'.$sfile.'</h3>
@@ -158,8 +158,8 @@ echo '
 			<img id="fwd1min" onclick="changePos(this,60)" style="margin-left:10px; float:right;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAMAAABiFaQOAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURQAAAEVFRTAwMBkZGdLS0oKCgr29venp6WVlZfn5+QEBAaOjo3d3d5WVlQ8PD////yWhsNkAAAAQdFJOU////////////////////wDgI10ZAAACi0lEQVR42pyWiZLDIAiG8b6iff+3XQWPpJFkp85Op5v0A0R+BD4/LGDfOP0LpOwPUCn2B0/AUY8QRz1CkaGeIYZ6Do+hniHYR/gGbal3aEPxUCBoR22h4LRNuUBfN+oOBWuEjPRjhvqGnJFxhLWgL+oKuUNdXMDJl2agpOIGICs+bCHnMZDlKjLMCdKSEPpQUs491S8XZkEa6xOtK5+0C/1w734WpFXLVsNkcueK2DADchJ91CTlcCujb6ZDQfQUCP1d5RumQ6af5Pk9Qi02Rk+6xLtNFCFs/HTIA+ZNhLvcdwxClnKg3F1PWwYhT5lLdxF6tu/pgo7EXbl7PwhlOsRvTbvIMQ0SrRROWXDWkkwCfwH0k8+TkYApDeHhqrEk7VEKtjLweqkldCQp31bgf8OAa8G6DWQw4T13hpLysfXDVJ+pprboO0Tl0E+kdqIJYQuTy+AVauuYeZiQRKBstjggs57M8GqsETc5G49oy4zwlqcrBBfoQPu+QgdC/j+Qx3o7KpQpe+EdCgKh/KH3cNIFD/XasRXS5VqvO4jCIPP12OqD1oji2hTvyeMPZWhV7rGpzPhYqHcaj9Kw1BLNG0T11vZRHwSJghquOAiHEYwOe0SG4fcJoiJA3cHoyXHokIEykCM3+l5mx4y5bCFHabVlQd2Sp4gZLYsg3Z616zjtmVQAk9X12NOZgCxF7zazi4/0FtL1UjNExajSVxcKSXWL6yhPWiEKpNGTC9pImijiSXNLyse4o+uf9CbVZbzs13CMF52uOHKZFMCcDgZT8n740BK4FaXmxpxg1H3IQQmY8DBQOaMuodEgYtzLvOeSUCdfUYnk/jOOOpu9kFIK4fOmkz+Now/rT4ABAF6ehhKswwzcAAAAAElFTkSuQmCC" />
 			<img id="fwd5min" onclick="changePos(this,300)" style="float:right;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAABACAMAAABiFaQOAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURQAAACwsLBQUFNHR0UBAQISEhGZmZr29vejo6Pr6+lNTUwEBAXh4eKamppubm////wkrDiIAAAAQdFJOU////////////////////wDgI10ZAAACs0lEQVR42pyWWQKjIAxA2Qmg9v63HbJRp0DrDB8Wax4kIQvm9R/DTP94+QX/D5DLAunkEdSyQC0/hwxvATp5BrEw6OQZ1EgYdPIQImHQyUP1SBh08hAyqNipk/wUQuExyY+hZoxOJmoHfaW20G1M1AyZ9pP6hCDOzKTh3xAcs3K6l99ApzUL5YgxCZYQpJvPJqYs1fN2g+DffzFvSJh2X369zxvyGJ537AujEFhSrTvp0jASXSfdBlSq2BO8RHkXdTtGoCgMfnfqYp1s8sm725pOzAC3tGdAyZADahnp3kXBrXUTKLMPrB9RjqKgkzWU2L/nSI0kdW9lj0BicR35xMuD2+xD0MWHqLHfRBTajkGoYiiYwMvnXHMfgGlS9g0ALB1ilAMb25bypdV4jhb/CX1tamRSs6CQjX1IxgHpuah7kRwuvutQGDPTg9f5vqiFT4hPSU6kdghoI4TwLCw+4gzhOPg1sFSvIghVCgozdt9DNCpBGV9fb+gKoYYQh3o3CNPQLqHE+dOh424TSdFjCVG8Heg9yr9wO8odVAJBqF4mIxz8hsDJwRtOW42BI4SwhU4yqXvWvIqlgE2/bUpU5GzBKE9kFOv3DepXGMOrdyhzqYrqH4TcAuJ4Qzs6VLBQNt4KuxMWvMXh0mWE8w5rBMc5WSUOaucMSSW5pLAAu4LePcq56zVBF9V6Dniqe9e9sfaMX+Rddu+NpCxXrpb7ayEzWrKMNhrqM+5cMydV29F4pdWchldqCWYEUuOvWk+1qUWhjL0+qlC5rH6Ln+3z4C+IRT+44qM12iCPuVEf0tspvlI8+4jJSj9td+Z+JbicUuxdeQjjrvXlwwezHcHvrjklujbdWSgFYvlyoYLo7pc9VtdF+HHfg7O6217N1RN+X0cx+mKqwdpQU8zw6Ir9YPwRYAC5yHxhsOwjcwAAAABJRU5ErkJggg==" />
 			<br />
-			<img id="prev" onclick="skipFile(prev_file)" style="clear:both; float:left;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAMAAADypuvZAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURbq6ugAAAPz8/Ozs7FBQUBcXFzg4ONjY2GRkZMPDw1paWkZGRgEBAZWVlQ4ODv///xKzLLsAAAAQdFJOU////////////////////wDgI10ZAAABrklEQVR42nyWV4KFIAxFE1CxoG//ux0saMrN+HnCkZhIoV/wpFJyBClyMlGJYCTlZdtKBCly1mMqESSc2zIzm5kEpGCekXkoESRYg/lgIylIKLeV2UgaUpCbkTQkkFtlI1lIoKyVa1WShYRyq1pykHwrnnCXACQwD6tvApB8K1QcQrKt6NE7DqGQ+ueqOISvdH5uZROHUEi9FV+4xSF8pfa5Xyu+OIRdelshonzMAIr1pFtxP3XdAeS+cm0r7nm23UMhtXmqTZ03WtnBTyo0+DTm3cPr6dI+ujQYQiGl1gxXJAil1Oow2gH7DqCQfqm9dqxmwHR21kJZ8pTIJXNM5KGQTo2ezUY2dwFQ/BHpsdRr6wyg+mGfDOWIOmQPzXq6q8EqDqGSXDVOCUC9R6TWGrnkrj0CQbUbJd2aezdCUEn3+u0jHglAvS2n6+fhqg4AD40kW/NKDlpJlOuTLHTn09MafT4Z6KW0zKOTNERn7vOj6jNXQngluBpqrwQCRveIA90jjv+ku8j2xvLBQGoDeCoRDC5UbcA2lAiG971Ee45gLOWcIkjhdbQ9EfwTYADxyVlJ1ToYAwAAAABJRU5ErkJggg==" />
-			<img id="next" onclick="skipFile(next_file)" style="float:right;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAMAAADypuvZAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURbq6ugAAAPz8/Ozs7FBQUBcXFzg4ONjY2GRkZMPDw1paWkZGRgEBAZWVlQ4ODv///xKzLLsAAAAQdFJOU////////////////////wDgI10ZAAABlElEQVR42nyWSwKDIAwFSWzrD/D+t62CbYFM6nJk8JGIEo7jmOZZj/FCeF/huh/CZAYgbKR539dpvIGwlV55MwMQdk8SWdYhDMJWeog8x2kRDpLkpV84wlES2bowCK3Uh0FoJYltGISjFKPEtsgIrRS7MAhNvDLg1xqEsCZpp0XoSN/WICSpjqitQehI3zAIfelszTktQpZKuUprEDrSpzUB4f2sz37qRpTWLBlgterOLQWStlzPLW0Aa0JPOluT9mxhScjSFSZuYQd4PeuWzHWFeSwJ4Dr/k+SZZoSedEU5G6MIHam0ZQkpAZzUK4TEq5UvC1d1qldjhPDKFupX2ocnlVdm3QCq4rt3b4SgS4wWslRGXjEmgqq8NeReLkJ/E9YpEeKH5W6FqgNZKv1R9aCVynLL9lQPgiQ1RvcD6CF8lpv2ORD+Gl2JEEK8thUM4U+4rGqkHhrp91lrpAEOUjxLZI4EBg5SpnNE/neO2KGsCLuzkdiyIuziPeyUCNvzXoLbCBtJp8neR9hKFF3VdY63AAMAteBZIvIjGYgAAAAASUVORK5CYII=" />
+			<img id="prev" onclick="skipFile(prev_file)" style="clear:both; float:left;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAMAAADypuvZAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURQAAAF9fX5KSksvLy6urq+np6SkpKTU1NdPT0/7+/js7OwEBAfLy8hcXFwUFBf///+ep9boAAAAQdFJOU////////////////////wDgI10ZAAAB00lEQVR42tyWyxLkIAhFfUQTNbH//29HxCgQdTGrqWGRqr7NQSQEVb+/MPXvQ8669uAWLqkF9ALIanOYQ1sJOaMvoaBXhZ6z2GNl1ENo4W5Khbwq5q1kvDqtiIJeFToBOq1cJ6l48XUyei2gGlUxyB0xqR1UmKgY9CprCPaTGAQr5z1Uc0uJQF1ZQZhJIhBRFlBoUVNPjzALCLOvO2pQqXXsyhzCWlOIKTPozUR1KNT305UJ1GpNIOyMHURr0KBbKF+oRiUeKlrMbSin7HK+n2JZS4V0eYNIraslbaQiIWO8iFoYoUgIPYjDo03kyjc9qxV38U6X33vIyex8+OT7gbQ1ngV+tIU3LSgGpaxxLVoIK5VP9by7ZxRbPX2nUbjFLrKWyrT3wIc4RVxd7XrvF5rPaFipzCBYK7NPA6i8/Z5+4HOOOsNHCJN1KIsZcUHk5oQzwhFlARWfPhMQKkp8leXcG3V+595QllDoffhCg9rM8tvg5B6z/FW2p4bxiZ8aNyo7CKqRGARKphCeRfz4vGAX9FBryv7Mhb3z0xG+ytHlTzUBFYprQ2n3iGJRXgmKD79bdKXeWA5XbHJjKX9MFVXTD/C4P3egEMJUUf/hfe+PAAMAzVhbok4nqHkAAAAASUVORK5CYII=" />
+			<img id="next" onclick="skipFile(next_file)" style="float:right;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAMAAADypuvZAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAwUExURQAAAF9fX5KSksvLy6urq+np6SkpKTU1NdPT0/7+/js7OwEBAfLy8hcXFwUFBf///+ep9boAAAAQdFJOU////////////////////wDgI10ZAAAB2UlEQVR42tSWzbakIAyEAwjyp/3+bzsEEJPQcM+d1QyLXtSpDyppjMLnLxb8+5A1NnDVGh+ks7j6T4WM0pYbvNJZQsV16EOZB7rOI7OdzeUOeXpxlXUNyMHJPeZME1VcZbkBnXDzs3yEJPZBV1kngSDFwzII5tMnCCAST4WYsoBowgbxur7FSzUPgbiygBLJ06DEEn6Lxzw1XupnhU1NxTXqajV1pVNL6Knihd66FhCMhA8EJPMOqjeBQb3zK+ipPQ+IdGMJVU+5USZyBeuSkAMgJqxC3VKx8pa72qZhKn3WlGqd/wHCKrQSimunu6/x2s4panUxpe+zgwCUd1IxaQPVNDo4qdjNSdhjdxgaDxVtsKh190p+o7jidFZp3b26q58Z724xjUT6TP6mroTN3YPqsDFxZXf3OhPIhe3K9tG40cEejRvPWUPtPhfmfXJRwV1WDyGmLzfVvzOiKk77zYzA9LEleSA0dWU1wp6K3xFGlOWEdT39O2HdOGc5y7WY5VRZxCNJerz6n+6g+yRJWjymzFDELvkPf6k5pjRX6S+55TRb21Uo8zv3ukbfnje5VKqGy5DvCO7wk1JdZY14dvpmmJWqlTW+WEKWjlnpWsj5//h0+/X6I8AAlqtb+JPPyyEAAAAASUVORK5CYII=" />
 		</div>
 		<br /><br />
 		<br /><br />
@@ -172,9 +172,7 @@ echo '
 foreach ($files_in_dir as $file) {
     $file = realpath($file);
     $link = substr($file, strlen($root) + 1);
-	if(strpos(strtolower($file), ".mp3")==true) {
-		echo '		<div style="vertical-align:middle; margin-top:8px; border:1px solid #aaa; padding:4px; background-color:'. ($link==$sfile ? 'lightgreen;' : 'none;'). '"><a href="?play='.urlencode($link).'" style="position:relative;top:-5px;font-size:20px;text-decoration:none;">'.basename($file).'</a></div>';
-	}
+	echo '		<div style="vertical-align:middle; margin-top:8px; border:1px solid #aaa; padding:4px; background-color:'. ($link==$sfile ? 'lightgreen;' : 'none;'). '"><a href="?play='.urlencode($link).'" style="position:relative;top:-5px;font-size:20px;text-decoration:none;">'.basename($file).'</a></div>';
 }
 
 
