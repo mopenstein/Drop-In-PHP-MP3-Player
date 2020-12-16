@@ -26,8 +26,8 @@ sort($files_in_dir);
 
 
 if (isset($_GET['update'])) {
-	if(!is_numeric($_GET['update'])) die ('0|null');
-	if(!file_exists(basename($_GET['file'], ".mp3") . ".mp3")) die ('0|null');
+	if(!is_numeric($_GET['update'])) die(implode("|", explode("\n", file_get_contents("last.played"))));
+	if(!file_exists(basename($_GET['file'], ".mp3") . ".mp3")) die(implode("|", explode("\n", file_get_contents("last.played"))));
 	
 	file_put_contents("last.played", $_GET['update'] . "\n" . $_GET['file']);
     die($_GET['update'] . "|" . $_GET['file']);
